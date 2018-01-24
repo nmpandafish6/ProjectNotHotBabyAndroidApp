@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">ProjectNotHotBaby</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string-array name="fruits_array">
+        <item>Apple</item>
+        <item>Mango</item>
+        <item>Grape</item>
+        <item>Strawberry</item>
+        <item>Raspberry</item>
+    </string-array>
+</resources>
