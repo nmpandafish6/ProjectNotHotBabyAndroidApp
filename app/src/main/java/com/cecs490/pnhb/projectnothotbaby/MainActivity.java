@@ -83,12 +83,16 @@ public class MainActivity extends AppCompatActivity
                     JSONObject json = new JSONObject(jsonString);
                     double temperature = json.getDouble("TEMP");
                     double humidity = json.getDouble("HUMIDITY");
+                    int occupied = json.getInt("OCCUPIED");
                     Toast.makeText(getApplicationContext(),
-                            "Temperature: " + temperature + "\nHumidity: " + humidity, Toast.LENGTH_SHORT).show();
+                            "Temperature: " + temperature + "\nHumidity: " + humidity +
+                            "Occupied: " + occupied, Toast.LENGTH_SHORT).show();
                     TextView conditions_currentTemperature = (TextView) findViewById(R.id.conditions_currentTemperature);
                     TextView conditions_currentHumidity = (TextView) findViewById(R.id.conditions_currentHumidity);
+                    TextView conditions_isOccupied = (TextView) findViewById(R.id.conditions_isOccupied);
                     conditions_currentTemperature.setText(temperature + " °F");
                     conditions_currentHumidity.setText(humidity + "  %");
+                    conditions_isOccupied.setText(occupied);
                     tempInputData = "";
                 } catch (IOException e) {
                     e.printStackTrace();
