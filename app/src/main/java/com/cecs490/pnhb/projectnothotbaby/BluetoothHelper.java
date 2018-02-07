@@ -67,7 +67,10 @@ public class BluetoothHelper {
     }
 
     public void write(String s) throws IOException {
-        m_connectedThread.write(s.getBytes());
+        if(m_connectedThread != null)
+            m_connectedThread.write(s.getBytes());
+        else
+            throw new IOException("NOT CONNECTED!!!");
     }
 
     public synchronized String read() throws IOException {
@@ -77,7 +80,15 @@ public class BluetoothHelper {
     }
 
     public void close(){
-        // TODO: Write Body
+        if(m_connectedThread != null)
+            m_connectedThread.running = false;
+        try {
+            mmSocket.close();
+            mmServerSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     // TODO: TEST!!!
@@ -176,6 +187,7 @@ public class BluetoothHelper {
 
     private class ConnectedThread extends Thread {
         private String inputString = null;
+        private boolean running = true;
         public ConnectedThread() {
             try {
                 m_inStream = mmSocket.getInputStream();
@@ -192,7 +204,7 @@ public class BluetoothHelper {
         public synchronized void run() {
             byte[] buffer = new byte[1024];  // buffer store for the stream
             // Keep listening to the InputStream until an exception occurs
-            while (true) {
+            while (running) {
                 try {
                     // Read from the InputStream
                     int bytes = m_inStream.read(buffer);
@@ -207,12 +219,22 @@ public class BluetoothHelper {
                     break;
                 }
             }
+            try {
+                m_inStream.close();
+                m_outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
         public void write(byte[] bytes) {
-            mHandler.obtainMessage(BluetoothHelper.MESSAGE_WRITE, -1, -1).sendToTarget();
-            try {
-                m_outputStream.write(bytes);
-            } catch (IOException e) {}
+            if (m_outputStream != null) {
+                mHandler.obtainMessage(BluetoothHelper.MESSAGE_WRITE, -1, -1).sendToTarget();
+                try {
+                    m_outputStream.write(bytes);
+                } catch (IOException e) {
+                }
+            }
         }
     }
 

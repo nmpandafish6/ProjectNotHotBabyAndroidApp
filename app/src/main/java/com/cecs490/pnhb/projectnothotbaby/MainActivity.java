@@ -18,9 +18,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
@@ -45,6 +49,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ResourceMaster.preferences = getSharedPreferences("Preferences",0);
+        ResourceMaster.preferenceEditor = ResourceMaster.preferences.edit();
+
+        ResourceMaster.tempPreferences = getSharedPreferences("Temp Preferences",0);
+        ResourceMaster.tempPreferenceEditor = ResourceMaster.tempPreferences.edit();
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -58,8 +69,8 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         BluetoothHelper.initBluetooth();
         // CPU MAC "A0:88:69:30:CB:1C"
-        final String bluetoothMAC = "20:16:12:12:80:68";
-        BluetoothDevice blueDevice = BluetoothHelper.mblue.getRemoteDevice(bluetoothMAC);
+        final String bluetoothMAC = ResourceMaster.preferences.getString(Constants.BLUETOOTH_MAC_KEY,"20:16:12:12:80:68");
+        final BluetoothDevice blueDevice = BluetoothHelper.mblue.getRemoteDevice(bluetoothMAC);
         BluetoothHelper.BluetoothSocketBehavior behavior = new BluetoothHelper.BluetoothSocketBehavior() {
             String tempInputData = "";
             @Override
@@ -70,7 +81,6 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void read() {
-
                 try {
                     String tmp = myDevice.read();
                     if(tmp == null) return;
@@ -83,12 +93,15 @@ public class MainActivity extends AppCompatActivity
                     JSONObject json = new JSONObject(jsonString);
                     double temperature = json.getDouble("TEMP");
                     double humidity = json.getDouble("HUMIDITY");
+                    boolean occupied = json.getBoolean("OCCUPIED");
                     Toast.makeText(getApplicationContext(),
                             "Temperature: " + temperature + "\nHumidity: " + humidity, Toast.LENGTH_SHORT).show();
                     TextView conditions_currentTemperature = (TextView) findViewById(R.id.conditions_currentTemperature);
                     TextView conditions_currentHumidity = (TextView) findViewById(R.id.conditions_currentHumidity);
+                    TextView conditions_isOccupied = (TextView) findViewById(R.id.conditions_isOccupied);
                     conditions_currentTemperature.setText(temperature + " °F");
                     conditions_currentHumidity.setText(humidity + "  %");
+                    conditions_isOccupied.setText("" + occupied);
                     tempInputData = "";
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -115,19 +128,239 @@ public class MainActivity extends AppCompatActivity
                         "None", Toast.LENGTH_SHORT).show();
             }
         };
-
-        Set<BluetoothDevice> pairedDevices
-                = BluetoothHelper.mblue.getBondedDevices();
-        for(BluetoothDevice device : pairedDevices) {
-            Toast.makeText(getApplicationContext(),
-                    device.getName() + device.getAddress(), Toast.LENGTH_SHORT).show();
-        }
         try {
             myDevice = new BluetoothHelper(blueDevice, behavior);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+
+        final TextView settings_temp_lower = (TextView) findViewById(R.id.settings_temp_lower);
+        final TextView settings_dew_point_lower = (TextView) findViewById(R.id.settings_dew_point_lower);
+
+        settings_temp_lower.setText("" + ResourceMaster.preferences.getInt(Constants.TEMPERATURE_THRESHOLD_KEY, 0));
+        settings_dew_point_lower.setText("" + ResourceMaster.preferences.getInt(Constants.DEW_POINT_THRESHOLD_KEY, 0));
+
+        final SeekBar humiditySeekBar = (SeekBar) findViewById(R.id.dewPointSeekBar);
+        humiditySeekBar.setProgress(ResourceMaster.preferences.getInt(Constants.DEW_POINT_THRESHOLD_KEY, 0));
+
+        humiditySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser){
+                    settings_dew_point_lower.setText("" + progress);
+                    ResourceMaster.tempPreferenceEditor.putInt(Constants.DEW_POINT_THRESHOLD_KEY, progress);
+                    ResourceMaster.tempPreferenceEditor.commit();
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        final SeekBar temperatureSeekBar = (SeekBar) findViewById(R.id.temperature_seekbar);
+        temperatureSeekBar.setProgress(ResourceMaster.preferences.getInt(Constants.TEMPERATURE_THRESHOLD_KEY, 0));
+        temperatureSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser){
+                    settings_temp_lower.setText("" + progress);
+                    ResourceMaster.tempPreferenceEditor.putInt(Constants.TEMPERATURE_THRESHOLD_KEY, progress);
+                    ResourceMaster.tempPreferenceEditor.commit();
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        final Switch adaptiveHumiditySwitch = (Switch)findViewById(R.id.adaptiveHumidityMode);
+        adaptiveHumiditySwitch.setChecked(ResourceMaster.preferences.getBoolean(Constants.ADAPTIVE_HUMIDITY_STATE_KEY, false));
+        adaptiveHumiditySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Toast.makeText(getApplicationContext(), "" + isChecked, Toast.LENGTH_SHORT).show();
+                humiditySeekBar.setEnabled(isChecked);
+                ResourceMaster.tempPreferenceEditor.putBoolean(Constants.ADAPTIVE_HUMIDITY_STATE_KEY, isChecked);
+                ResourceMaster.tempPreferenceEditor.commit();
+            }
+        });
+
+        final Switch soundModeSwitch = (Switch)findViewById(R.id.sound_mode);
+        soundModeSwitch.setChecked(ResourceMaster.preferences.getBoolean(Constants.SOUND_MODE_KEY, false));
+        soundModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                ResourceMaster.tempPreferenceEditor.putBoolean(Constants.SOUND_MODE_KEY, isChecked);
+                ResourceMaster.tempPreferenceEditor.commit();
+            }
+        });
+
+        final Switch vibrationModeSwitch = (Switch)findViewById(R.id.vibrate_mode);
+        vibrationModeSwitch.setChecked(ResourceMaster.preferences.getBoolean(Constants.VIBRATE_MODE_KEY, false));
+        vibrationModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                ResourceMaster.tempPreferenceEditor.putBoolean(Constants.VIBRATE_MODE_KEY, isChecked);
+                ResourceMaster.tempPreferenceEditor.commit();
+            }
+        });
+
+        final Button settings_apply = (Button) findViewById(R.id.settings_apply);
+        settings_apply.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                ResourceMaster.preferenceEditor.putBoolean(Constants.ADAPTIVE_HUMIDITY_STATE_KEY,
+                        ResourceMaster.tempPreferences.getBoolean(Constants.ADAPTIVE_HUMIDITY_STATE_KEY, false));
+                ResourceMaster.preferenceEditor.putString(Constants.BLUETOOTH_MAC_KEY,
+                        ResourceMaster.tempPreferences.getString(Constants.BLUETOOTH_MAC_KEY, "Dummy MAC Addr"));
+                ResourceMaster.preferenceEditor.putInt(Constants.TEMPERATURE_THRESHOLD_KEY,
+                        ResourceMaster.tempPreferences.getInt(Constants.TEMPERATURE_THRESHOLD_KEY, 80));
+                ResourceMaster.preferenceEditor.putInt(Constants.DEW_POINT_THRESHOLD_KEY,
+                        ResourceMaster.tempPreferences.getInt(Constants.DEW_POINT_THRESHOLD_KEY, 80));
+                ResourceMaster.preferenceEditor.putBoolean(Constants.VIBRATE_MODE_KEY,
+                        ResourceMaster.tempPreferences.getBoolean(Constants.VIBRATE_MODE_KEY, false));
+                ResourceMaster.preferenceEditor.putBoolean(Constants.SOUND_MODE_KEY,
+                        ResourceMaster.tempPreferences.getBoolean(Constants.SOUND_MODE_KEY, false));
+                ResourceMaster.preferenceEditor.commit();
+
+                myDevice.close();
+                final String newBluetoothMAC = ResourceMaster.preferences.getString(Constants.BLUETOOTH_MAC_KEY,"20:16:12:12:80:68");
+                final BluetoothDevice newBlueDevice = BluetoothHelper.mblue.getRemoteDevice(newBluetoothMAC);
+                BluetoothHelper.BluetoothSocketBehavior behavior = new BluetoothHelper.BluetoothSocketBehavior() {
+                    String tempInputData = "";
+                    @Override
+                    public void write() {
+                        Toast.makeText(getApplicationContext(),
+                                "Writing", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void read() {
+                        Toast.makeText(getApplicationContext(),
+                                "Reading", Toast.LENGTH_SHORT).show();
+                        try {
+                            String tmp = myDevice.read();
+
+                            if(tmp == null) return;
+                            tempInputData += tmp;
+                            String jsonString = "";
+                            if(tempInputData.contains("}") && tempInputData.contains("{")){
+                                jsonString = tempInputData.substring(tempInputData.indexOf("{"),
+                                        tempInputData.indexOf("}") + 1);
+                            }
+                            Toast.makeText(getApplicationContext(),
+                                    "Read " + jsonString, Toast.LENGTH_SHORT).show();
+                            JSONObject json = new JSONObject(jsonString);
+                            double temperature = 9000;
+                            try {
+                                temperature = json.getDouble("TEMP");
+                            }catch (JSONException e){
+                            }
+                            double humidity = 9000;
+                            try {
+                                humidity = json.getDouble("HUMIDITY");
+                            }catch (JSONException e){
+                            }
+                            boolean occupied = false;
+                            try {
+                                occupied = json.getBoolean("OCCUPIED");
+                            }catch (JSONException e){
+                            }
+                            Toast.makeText(getApplicationContext(),
+                                    "Temperature: " + temperature + "\nHumidity: " + humidity, Toast.LENGTH_SHORT).show();
+                            TextView conditions_currentTemperature = (TextView) findViewById(R.id.conditions_currentTemperature);
+                            TextView conditions_currentHumidity = (TextView) findViewById(R.id.conditions_currentHumidity);
+                            TextView conditions_isOccupied = (TextView) findViewById(R.id.conditions_isOccupied);
+                            conditions_currentTemperature.setText(temperature + " °F");
+                            conditions_currentHumidity.setText(humidity + "  %");
+                            conditions_isOccupied.setText("" + occupied);
+                            tempInputData = "";
+                        } catch (IOException e) {
+                            Toast.makeText(getApplicationContext(),
+                                    e.toString(), Toast.LENGTH_SHORT).show();
+                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void connected() {
+                        Toast.makeText(getApplicationContext(),
+                                "Connected", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void connecting() {
+                        Toast.makeText(getApplicationContext(),
+                                "Connecting:" + newBluetoothMAC, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void none() {
+                        Toast.makeText(getApplicationContext(),
+                                "None", Toast.LENGTH_SHORT).show();
+                    }
+                };
+                try {
+                    myDevice = new BluetoothHelper(newBlueDevice, behavior);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                final JSONObject json = new JSONObject();
+                try {
+                    json.put("TEMP MIN", ResourceMaster.preferences.getInt(Constants.TEMPERATURE_THRESHOLD_KEY,0));
+                    json.put("DEW POINT MIN", ResourceMaster.preferences.getInt(Constants.DEW_POINT_THRESHOLD_KEY,0));
+                    json.put("ADAPTIVE HUMIDITY", ResourceMaster.preferences.getBoolean(Constants.ADAPTIVE_HUMIDITY_STATE_KEY, false));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Thread thread = new Thread() {
+                    public void run() {
+                        boolean success = false;
+                        while(!success) {
+                            try {
+                                myDevice.write(json.toString());
+                                success = true;
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                };
+                thread.start();
+            }
+        });
+
+        final Spinner bluetoothDeviceSpinner = (Spinner)findViewById(R.id.device_spinner);
+
+        bluetoothDeviceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String device = ResourceMaster.pairedDeviceList.get(position);
+                String macAddr = device.substring(device.lastIndexOf('[')+1,device.lastIndexOf(']'));
+                ResourceMaster.tempPreferenceEditor.putString(Constants.BLUETOOTH_MAC_KEY, macAddr);
+                ResourceMaster.tempPreferenceEditor.commit();
+                Toast.makeText(getApplicationContext(),
+                        macAddr, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     @Override
@@ -162,6 +395,32 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    public void setupSettingsView(){
+        Set<BluetoothDevice> pairedDevices
+                = BluetoothHelper.mblue.getBondedDevices();
+        Spinner bluetoothDeviceSpinner = (Spinner)findViewById(R.id.device_spinner);
+        ResourceMaster.pairedDeviceList = new ArrayList();
+        int i = 0; int index = 0;
+        for(BluetoothDevice device: pairedDevices){
+            if(device.getAddress().equals(ResourceMaster.preferences.getString(Constants.BLUETOOTH_MAC_KEY, "Dummy MAC Addr"))){
+                index = i;
+            }
+            ResourceMaster.pairedDeviceList.add(device.getName() + " [" + device.getAddress() + "]");
+            i++;
+        }
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item,ResourceMaster.pairedDeviceList);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        bluetoothDeviceSpinner.setAdapter(spinnerAdapter);
+        bluetoothDeviceSpinner.setSelection(index);
+        spinnerAdapter.notifyDataSetChanged();
+
+        Switch adaptiveHumiditySwitch = (Switch)findViewById(R.id.adaptiveHumidityMode);
+        boolean isAdaptiveHumidityMode = adaptiveHumiditySwitch.isChecked();
+        SeekBar humiditySeekBar = (SeekBar) findViewById(R.id.dewPointSeekBar);
+        humiditySeekBar.setEnabled(isAdaptiveHumidityMode);
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -177,6 +436,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_stats) {
             vf.setDisplayedChild(4);
         } else if (id == R.id.nav_settings) {
+            setupSettingsView();
             vf.setDisplayedChild(5);
         }
 

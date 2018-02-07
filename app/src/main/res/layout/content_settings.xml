@@ -1,136 +1,212 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:layout_editor_absoluteX="8dp"
-    tools:layout_editor_absoluteY="8dp"
-        android:weightSum="1">
+    android:layout_height="match_parent">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="1"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <Space
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize" />
-
-    <TextView
-        android:id="@+id/textview_settings"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Settings"
-        android:textAppearance="@android:style/TextAppearance.Large"
-        android:visibility="visible" />
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize" />
 
         <TextView
-            android:id="@+id/textView"
-            android:layout_width="95dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.37"
-            android:text="Paired Device"
-            android:textAppearance="@android:style/TextAppearance.Medium" />
-
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <Spinner
-            android:id="@+id/spinner_control"
-            android:layout_width="192dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.45" />
-
-    </LinearLayout>
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Temperature Threshold (Min Temp)"
-        android:textAppearance="@android:style/TextAppearance.Medium" />
-
-    <SeekBar
-        android:id="@+id/seekBar"
-        style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="384dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:max="10"
-        android:progress="3" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Humidity Threshold (Min Humidity)"
-        android:textAppearance="@android:style/TextAppearance.Medium" />
-
-    <SeekBar
-        android:id="@+id/seekBar2"
-        style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="384dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:max="10"
-        android:progress="3" />
-
-    <Switch
-        android:id="@+id/switch1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:switchTextAppearance="@android:style/TextAppearance.Medium"
-        android:text="Adaptive Humidity Mode"
-        android:textAppearance="@android:style/TextAppearance.Medium" />
-
-    <Switch
-        android:id="@+id/switch2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:switchTextAppearance="@android:style/TextAppearance.Medium"
-        android:text="Vibrate"
-        android:textAppearance="@android:style/TextAppearance.Medium" />
-
-    <Switch
-        android:id="@+id/switch3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:switchTextAppearance="@android:style/TextAppearance.Medium"
-        android:text="Play Sound"
-        android:textAppearance="@android:style/TextAppearance.Medium" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="81dp"
-        android:layout_weight="0.90"
-        android:orientation="horizontal">
-
-        <Space
-            android:layout_width="254dp"
-            android:layout_height="wrap_content" />
-
-        <Button
-            android:id="@+id/settings_apply"
+            android:id="@+id/textview_settings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="106dp"
-            android:text="Apply"
+            android:text="Settings"
+            android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
             android:visibility="visible" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/fab_margin" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.37"
+                android:text="Paired Device"
+                android:textAppearance="@android:style/TextAppearance.Medium" />
+
+            <Spinner
+                android:id="@+id/device_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_weight="0.45"
+                android:gravity="right" />
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/fab_margin" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Temperature Threshold (Min Temp)"
+            android:textAppearance="@android:style/TextAppearance.Medium" />
+
+        <SeekBar
+            android:id="@+id/temperature_seekbar"
+            style="@style/Widget.AppCompat.SeekBar.Discrete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:max="21"
+            android:progress="21" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/settings_temp_lower"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.37"
+                android:text="60"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                tools:text="60" />
+
+            <TextView
+                android:id="@+id/settings_temp_upper"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="80"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                tools:text="80" />
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/fab_margin" />
+
+        <Switch
+            android:id="@+id/adaptiveHumidityMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:switchTextAppearance="@android:style/TextAppearance.Medium"
+            android:text="Adaptive Humidity Mode"
+            android:textAppearance="@android:style/TextAppearance.Medium" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dew Point Threshold (Min Dew Point)"
+            android:textAppearance="@android:style/TextAppearance.Medium" />
+
+        <SeekBar
+            android:id="@+id/dewPointSeekBar"
+            style="@style/Widget.AppCompat.SeekBar.Discrete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:clickable="false"
+            android:contextClickable="false"
+            android:longClickable="false"
+            android:max="21"
+            android:progress="21" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/settings_dew_point_lower"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.37"
+                android:text="60"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                tools:text="60" />
+
+            <TextView
+                android:id="@+id/settings_dew_point_upper"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="80"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                tools:text="80" />
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/fab_margin" />
+
+        <Switch
+            android:id="@+id/vibrate_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:switchTextAppearance="@android:style/TextAppearance.Medium"
+            android:text="Vibrate"
+            android:textAppearance="@android:style/TextAppearance.Medium" />
+
+        <Switch
+            android:id="@+id/sound_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:switchTextAppearance="@android:style/TextAppearance.Medium"
+            android:text="Play Sound"
+            android:textAppearance="@android:style/TextAppearance.Medium" />
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="bottom">
+
+            <Button
+                android:id="@+id/settings_apply"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="@dimen/fab_margin"
+                android:text="Apply"
+                android:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:srcCompat="@drawable/ic_child_care_black_24dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_above="@+id/settings_apply" />
+
+        </RelativeLayout>
+
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

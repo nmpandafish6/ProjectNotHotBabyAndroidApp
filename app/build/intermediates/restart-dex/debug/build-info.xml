@@ -6,30 +6,30 @@
     density="420dpi"
     format="10"
     plugin-version="2.3.3"
-    timestamp="1517183588741"
+    timestamp="1517985301217"
     token="-6265136674093703951"
     verifier="COLD_SWAP_REQUESTED" >
 
     <task
         name="javac"
-        duration="159" />
+        duration="0" />
     <task
         name="instant-run-dex"
         duration="0" />
     <task
         name="instant-run-transform"
-        duration="22" />
+        duration="0" />
     <task
         name="verifier"
-        duration="8" />
+        duration="0" />
 
     <artifact
-        location="C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\build\intermediates\split-apk\debug\slices\slice_5.apk"
-        type="SPLIT" />
+        location="C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\build\outputs\apk\app-debug.apk"
+        type="SPLIT_MAIN" />
 
     <build
         build-mode="FULL"
-        timestamp="1517163561162"
+        timestamp="1517982665247"
         verifier="FULL_BUILD_REQUESTED" >
         <artifact
             location="C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\build\intermediates\split-apk\debug\slices\slice_5.apk"
@@ -70,11 +70,25 @@
     </build>
     <build
         build-mode="COLD"
-        timestamp="1517183588741"
+        timestamp="1517985179898"
         verifier="COLD_SWAP_REQUESTED" >
+        <artifact
+            location="C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\build\intermediates\split-apk\debug\slices\slice_2.apk"
+            type="SPLIT" />
         <artifact
             location="C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\build\intermediates\split-apk\debug\slices\slice_5.apk"
             type="SPLIT" />
+        <artifact
+            location="C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\build\intermediates\split-apk\debug\slices\slice_0.apk"
+            type="SPLIT" />
+    </build>
+    <build
+        build-mode="COLD"
+        timestamp="1517985301217"
+        verifier="COLD_SWAP_REQUESTED" >
+        <artifact
+            location="C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\build\outputs\apk\app-debug.apk"
+            type="SPLIT_MAIN" />
     </build>
 
 </instant-run>

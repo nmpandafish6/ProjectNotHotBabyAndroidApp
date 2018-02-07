@@ -14,6 +14,18 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize" />
 
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Settings"
+        android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+        android:visibility="visible" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/fab_margin" />
+
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -30,9 +42,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:text="False" />
+            android:text="False"
+            android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
     </GridLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/fab_margin" />
 
     <GridLayout
         android:layout_width="match_parent"
@@ -50,9 +67,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:text="## °F" />
+            android:text="## °F"
+            android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
     </GridLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/fab_margin" />
 
     <GridLayout
         android:layout_width="match_parent"
@@ -70,8 +92,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:text="## %" />
+            android:text="## %"
+            android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
     </GridLayout>
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        app:srcCompat="@drawable/ic_child_care_black_24dp"
+        android:layout_weight="0.52" />
 
 </LinearLayout>
