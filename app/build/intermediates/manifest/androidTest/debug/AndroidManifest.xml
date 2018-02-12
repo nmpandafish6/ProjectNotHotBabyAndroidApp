@@ -3,7 +3,7 @@
     package="com.cecs490.pnhb.projectnothotbaby.test" >
 
     <uses-sdk
-        android:minSdkVersion="15"
+        android:minSdkVersion="24"
         android:targetSdkVersion="26" />
 
     <instrumentation

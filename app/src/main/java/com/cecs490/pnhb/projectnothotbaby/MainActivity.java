@@ -1,5 +1,9 @@
 package com.cecs490.pnhb.projectnothotbaby;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -7,7 +11,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -35,7 +44,10 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -45,6 +57,43 @@ public class MainActivity extends AppCompatActivity
 
     private int debug_state = 0;
     private static BluetoothHelper myDevice;
+
+    private NotificationManager mNotificationManager;
+    private NotificationCompat.Builder mBuilder;
+    private static long notificationEnd = Long.MAX_VALUE;
+    private static long notificationTime = 100000;
+    private static NotificationDelayThread notificationDelayThread = null;
+    private class NotificationDelayThread extends Thread {
+        public long m_delayTime = 0;
+        public boolean notify = true;
+        public NotificationDelayThread(long delayTime) {
+
+            m_delayTime = delayTime;
+            long notificationEndTemp = System.currentTimeMillis() + m_delayTime;
+            if(notificationEndTemp < notificationEnd) {
+                if(notificationDelayThread != null){
+                    notificationDelayThread.notify = false;
+                }
+                this.start();
+                notificationEnd = notificationEndTemp;
+            }
+            Date date = new Date(notificationEnd);
+            DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
+            String dateFormatted = formatter.format(date);
+            Log.e("TAG", "NOTIFY @ " + dateFormatted);
+        }
+
+        public void run() {
+            try {
+                Thread.sleep(m_delayTime);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if(notify) {
+                mNotificationManager.notify(1, mBuilder.build());
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,12 +115,50 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // The id of the channel.
+        String CHANNEL_ID = "my_channel_01";
+        Uri notificationSound= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        long[] vibrate = {0,100,200,300};
+        mBuilder =
+                new NotificationCompat.Builder(this.getApplicationContext())
+                        .setSmallIcon(R.drawable.ic_child_care_black_24dp)
+                        .setContentTitle("My notification")
+                        .setContentText("Hello World!")
+                        .setVibrate(vibrate)
+                        .setSound(notificationSound);
+        mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Intent resultIntent = new Intent(this, MainActivity.class);
+        // The stack builder object will contain an artificial back stack for the
+        // started Activity.
+        // This ensures that navigating backward from the Activity leads out of
+        // your app to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        // Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(MainActivity.class);
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+
+
+        // mNotificationId is a unique integer your app uses to identify the
+        // notification. For example, to cancel the notification, you can pass its ID
+        // number to NotificationManager.cancel().
+        mNotificationManager.cancel(1);
+
+
         setSupportActionBar(toolbar);
         BluetoothHelper.initBluetooth();
         // CPU MAC "A0:88:69:30:CB:1C"
         final String bluetoothMAC = ResourceMaster.preferences.getString(Constants.BLUETOOTH_MAC_KEY,"20:16:12:12:80:68");
         final BluetoothDevice blueDevice = BluetoothHelper.mblue.getRemoteDevice(bluetoothMAC);
-        BluetoothHelper.BluetoothSocketBehavior behavior = new BluetoothHelper.BluetoothSocketBehavior() {
+        final BluetoothHelper.BluetoothSocketBehavior blueBehavior  = new BluetoothHelper.BluetoothSocketBehavior() {
             String tempInputData = "";
             @Override
             public void write() {
@@ -112,6 +199,8 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void connected() {
+                notificationDelayThread = new NotificationDelayThread(notificationTime);
+                notificationTime /= 2;
                 Toast.makeText(getApplicationContext(),
                         "Connected", Toast.LENGTH_SHORT).show();
             }
@@ -124,12 +213,16 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void none() {
-                Toast.makeText(getApplicationContext(),
-                        "None", Toast.LENGTH_SHORT).show();
+                Log.e("TAG", "INSIDE NONE");
+                try {
+                    myDevice.close();
+                    myDevice.reconnect();
+                }catch (Exception e){
+                }
             }
         };
         try {
-            myDevice = new BluetoothHelper(blueDevice, behavior);
+            myDevice = new BluetoothHelper(blueDevice, blueBehavior);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -237,84 +330,8 @@ public class MainActivity extends AppCompatActivity
                 myDevice.close();
                 final String newBluetoothMAC = ResourceMaster.preferences.getString(Constants.BLUETOOTH_MAC_KEY,"20:16:12:12:80:68");
                 final BluetoothDevice newBlueDevice = BluetoothHelper.mblue.getRemoteDevice(newBluetoothMAC);
-                BluetoothHelper.BluetoothSocketBehavior behavior = new BluetoothHelper.BluetoothSocketBehavior() {
-                    String tempInputData = "";
-                    @Override
-                    public void write() {
-                        Toast.makeText(getApplicationContext(),
-                                "Writing", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void read() {
-                        Toast.makeText(getApplicationContext(),
-                                "Reading", Toast.LENGTH_SHORT).show();
-                        try {
-                            String tmp = myDevice.read();
-
-                            if(tmp == null) return;
-                            tempInputData += tmp;
-                            String jsonString = "";
-                            if(tempInputData.contains("}") && tempInputData.contains("{")){
-                                jsonString = tempInputData.substring(tempInputData.indexOf("{"),
-                                        tempInputData.indexOf("}") + 1);
-                            }
-                            Toast.makeText(getApplicationContext(),
-                                    "Read " + jsonString, Toast.LENGTH_SHORT).show();
-                            JSONObject json = new JSONObject(jsonString);
-                            double temperature = 9000;
-                            try {
-                                temperature = json.getDouble("TEMP");
-                            }catch (JSONException e){
-                            }
-                            double humidity = 9000;
-                            try {
-                                humidity = json.getDouble("HUMIDITY");
-                            }catch (JSONException e){
-                            }
-                            boolean occupied = false;
-                            try {
-                                occupied = json.getBoolean("OCCUPIED");
-                            }catch (JSONException e){
-                            }
-                            Toast.makeText(getApplicationContext(),
-                                    "Temperature: " + temperature + "\nHumidity: " + humidity, Toast.LENGTH_SHORT).show();
-                            TextView conditions_currentTemperature = (TextView) findViewById(R.id.conditions_currentTemperature);
-                            TextView conditions_currentHumidity = (TextView) findViewById(R.id.conditions_currentHumidity);
-                            TextView conditions_isOccupied = (TextView) findViewById(R.id.conditions_isOccupied);
-                            conditions_currentTemperature.setText(temperature + " °F");
-                            conditions_currentHumidity.setText(humidity + "  %");
-                            conditions_isOccupied.setText("" + occupied);
-                            tempInputData = "";
-                        } catch (IOException e) {
-                            Toast.makeText(getApplicationContext(),
-                                    e.toString(), Toast.LENGTH_SHORT).show();
-                            e.printStackTrace();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void connected() {
-                        Toast.makeText(getApplicationContext(),
-                                "Connected", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void connecting() {
-                        Toast.makeText(getApplicationContext(),
-                                "Connecting:" + newBluetoothMAC, Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void none() {
-                        Toast.makeText(getApplicationContext(),
-                                "None", Toast.LENGTH_SHORT).show();
-                    }
-                };
                 try {
-                    myDevice = new BluetoothHelper(newBlueDevice, behavior);
+                    myDevice = new BluetoothHelper(newBlueDevice, blueBehavior);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -361,7 +378,11 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+
+
     }
+
+
 
     @Override
     public void onBackPressed() {

@@ -769,7 +769,7 @@ int id action_mode_bar_stub 0x7f0e0068
 int id action_mode_close_button 0x7f0e004b
 int id action_settings 0x7f0e00c0
 int id action_text 0x7f0e00a4
-int id actions 0x7f0e00b2
+int id actions 0x7f0e00b1
 int id activity_chooser_view_content 0x7f0e004c
 int id adaptiveHumidityMode 0x7f0e008d
 int id add 0x7f0e0027
@@ -824,7 +824,7 @@ int id fixed 0x7f0e0047
 int id home 0x7f0e0004
 int id homeAsUp 0x7f0e001d
 int id icon 0x7f0e0051
-int id icon_group 0x7f0e00b3
+int id icon_group 0x7f0e00b2
 int id ifRoom 0x7f0e0044
 int id image 0x7f0e004e
 int id imageView 0x7f0e00a1
@@ -853,7 +853,7 @@ int id navigation_header_container 0x7f0e009b
 int id never 0x7f0e0045
 int id none 0x7f0e0018
 int id normal 0x7f0e001a
-int id notification_background 0x7f0e00b1
+int id notification_background 0x7f0e00b0
 int id notification_main_column 0x7f0e00ab
 int id notification_main_column_container 0x7f0e00aa
 int id packed 0x7f0e0013
@@ -865,7 +865,7 @@ int id progress_circular 0x7f0e0006
 int id progress_horizontal 0x7f0e0007
 int id radio 0x7f0e0065
 int id right 0x7f0e0036
-int id right_icon 0x7f0e00b0
+int id right_icon 0x7f0e00b3
 int id right_side 0x7f0e00ac
 int id screen 0x7f0e0029
 int id scroll 0x7f0e0025

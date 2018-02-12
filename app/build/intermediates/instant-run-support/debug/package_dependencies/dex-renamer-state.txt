@@ -1,4 +1,4 @@
-#Sun Oct 15 21:01:33 PDT 2017
+#Sun Feb 11 17:09:55 PST 2018
 file.2=C\:\\Users\\Nicolas\\AndroidStudioProjects\\ProjectNotHotBaby\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\classes_1248a28a0743a0ac3521b9d874937c9cdbeb2982\\classes.dex
 base.2=C\:\\Users\\Nicolas\\AndroidStudioProjects\\ProjectNotHotBaby\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\classes_1248a28a0743a0ac3521b9d874937c9cdbeb2982
 file.1=C\:\\Users\\Nicolas\\AndroidStudioProjects\\ProjectNotHotBaby\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\classes_3e05b46ddf0b04e125cc0820e95412637996aab0\\classes.dex
