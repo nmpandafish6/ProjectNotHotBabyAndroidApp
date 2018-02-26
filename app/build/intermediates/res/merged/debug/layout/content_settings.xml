@@ -15,7 +15,6 @@
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="8dp"
         android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
 
         <Space
@@ -65,18 +64,18 @@
             android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Temperature Threshold (Min Temp)"
+            android:text="Sensitivity"
             android:textAppearance="@android:style/TextAppearance.Medium" />
 
         <SeekBar
-            android:id="@+id/temperature_seekbar"
+            android:id="@+id/sensitivity_seekbar"
             style="@style/Widget.AppCompat.SeekBar.Discrete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
-            android:max="21"
-            android:progress="21" />
+            android:max="4"
+            android:progress="0" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -84,21 +83,13 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/settings_temp_lower"
+                android:id="@+id/sensitivity_setting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.37"
-                android:text="60"
+                android:text="Low"
                 android:textAppearance="@android:style/TextAppearance.Medium"
-                tools:text="60" />
-
-            <TextView
-                android:id="@+id/settings_temp_upper"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="80"
-                android:textAppearance="@android:style/TextAppearance.Medium"
-                tools:text="80" />
+                tools:text="Low" />
 
         </LinearLayout>
 
@@ -113,50 +104,6 @@
             android:switchTextAppearance="@android:style/TextAppearance.Medium"
             android:text="Adaptive Humidity Mode"
             android:textAppearance="@android:style/TextAppearance.Medium" />
-
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Dew Point Threshold (Min Dew Point)"
-            android:textAppearance="@android:style/TextAppearance.Medium" />
-
-        <SeekBar
-            android:id="@+id/dewPointSeekBar"
-            style="@style/Widget.AppCompat.SeekBar.Discrete"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:clickable="false"
-            android:contextClickable="false"
-            android:longClickable="false"
-            android:max="21"
-            android:progress="21" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/settings_dew_point_lower"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.37"
-                android:text="60"
-                android:textAppearance="@android:style/TextAppearance.Medium"
-                tools:text="60" />
-
-            <TextView
-                android:id="@+id/settings_dew_point_upper"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="80"
-                android:textAppearance="@android:style/TextAppearance.Medium"
-                tools:text="80" />
-
-        </LinearLayout>
 
         <Space
             android:layout_width="match_parent"

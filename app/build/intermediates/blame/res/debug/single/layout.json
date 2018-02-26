@@ -176,6 +176,10 @@
         "source": "C:\\Users\\Nicolas\\.android\\build-cache\\d0edbd42827d1bb4d84ea1356ec54b0411e25064\\output\\res\\layout\\select_dialog_item_material.xml"
     },
     {
+        "merged": "C:\\Users\\Nicolas\\AndroidStudioProjects\\ProjectNotHotBaby\\app\\build\\intermediates\\res\\merged\\debug\\layout\\item_rss_feed.xml",
+        "source": "C:\\Users\\Nicolas\\AndroidStudioProjects\\ProjectNotHotBaby\\app\\src\\main\\res\\layout\\item_rss_feed.xml"
+    },
+    {
         "merged": "C:\\Users\\Nicolas\\AndroidStudioProjects\\ProjectNotHotBaby\\app\\build\\intermediates\\res\\merged\\debug\\layout\\abc_list_menu_item_checkbox.xml",
         "source": "C:\\Users\\Nicolas\\.android\\build-cache\\d0edbd42827d1bb4d84ea1356ec54b0411e25064\\output\\res\\layout\\abc_list_menu_item_checkbox.xml"
     },

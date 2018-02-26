@@ -1,5 +1,8 @@
 package com.cecs490.pnhb.projectnothotbaby;
 
+import android.Manifest;
+import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -11,12 +14,19 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.icu.util.Calendar;
+import android.location.Location;
+import android.location.LocationManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.app.NotificationCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -41,9 +51,14 @@ import android.widget.ViewFlipper;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -63,15 +78,25 @@ public class MainActivity extends AppCompatActivity
     private static long notificationEnd = Long.MAX_VALUE;
     private static long notificationTime = 100000;
     private static NotificationDelayThread notificationDelayThread = null;
+    private static double lastTemperature = -1000;
+    private static double lastHumidity = -1000;
+    private static boolean lastOccupied = false;
+    private static double lastSeverity = 0;
+    private AlarmManager alarmMgr;
+    private PendingIntent alarmIntent;
+    private static Location location;
+    private static Context m_context;
+
     private class NotificationDelayThread extends Thread {
         public long m_delayTime = 0;
         public boolean notify = true;
+
         public NotificationDelayThread(long delayTime) {
 
             m_delayTime = delayTime;
             long notificationEndTemp = System.currentTimeMillis() + m_delayTime;
-            if(notificationEndTemp < notificationEnd) {
-                if(notificationDelayThread != null){
+            if (notificationEndTemp < notificationEnd) {
+                if (notificationDelayThread != null) {
                     notificationDelayThread.notify = false;
                 }
                 this.start();
@@ -80,7 +105,7 @@ public class MainActivity extends AppCompatActivity
             Date date = new Date(notificationEnd);
             DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
             String dateFormatted = formatter.format(date);
-            Log.e("TAG", "NOTIFY @ " + dateFormatted);
+            Log.e("NOTIFY_TAG", "NOTIFY @ " + dateFormatted);
         }
 
         public void run() {
@@ -89,8 +114,9 @@ public class MainActivity extends AppCompatActivity
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            if(notify) {
+            if (notify) {
                 mNotificationManager.notify(1, mBuilder.build());
+                notificationEnd = Long.MAX_VALUE;
             }
         }
     }
@@ -99,10 +125,10 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ResourceMaster.preferences = getSharedPreferences("Preferences",0);
+        ResourceMaster.preferences = getSharedPreferences("Preferences", 0);
         ResourceMaster.preferenceEditor = ResourceMaster.preferences.edit();
 
-        ResourceMaster.tempPreferences = getSharedPreferences("Temp Preferences",0);
+        ResourceMaster.tempPreferences = getSharedPreferences("Temp Preferences", 0);
         ResourceMaster.tempPreferenceEditor = ResourceMaster.tempPreferences.edit();
 
         setContentView(R.layout.activity_main);
@@ -115,6 +141,42 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.news_feed);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        m_context = this;
+
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }else {
+            location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }
+        alarmMgr = (AlarmManager)getSystemService(ALARM_SERVICE);
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        intent.setAction("com.cecs490.pnhb.projectnothotbaby");
+        alarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+
+        //registerReceiver(new AlarmReceiver(), new IntentFilter("com.cecs490.pnhb.projectnothotbaby"));
+        // Set the alarm to start at 21:32 PM
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis()+60000);
+        //calendar.set(Calendar.HOUR_OF_DAY, 19);
+        //calendar.set(Calendar.MINUTE, 46);
+        Log.e("ALARM_TAG", "" + calendar.getTimeInMillis());
+        // setRepeating() lets you specify a precise custom interval--in this case,
+        // 1 day
+        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+10000,
+                60000*5, alarmIntent);
+
+
+
         // The id of the channel.
         String CHANNEL_ID = "my_channel_01";
         Uri notificationSound= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -122,10 +184,17 @@ public class MainActivity extends AppCompatActivity
         mBuilder =
                 new NotificationCompat.Builder(this.getApplicationContext())
                         .setSmallIcon(R.drawable.ic_child_care_black_24dp)
-                        .setContentTitle("My notification")
-                        .setContentText("Hello World!")
-                        .setVibrate(vibrate)
-                        .setSound(notificationSound);
+                        .setContentTitle("Hot Baby Alert!!!")
+                        .setContentText("Please retrieve your child and ensure their safety. :D");
+
+
+        if(ResourceMaster.preferences.getBoolean(Constants.SOUND_MODE_KEY, false)){
+            mBuilder.setSound(notificationSound);
+        }
+        if(ResourceMaster.preferences.getBoolean(Constants.VIBRATE_MODE_KEY, false)){
+            mBuilder.setVibrate(vibrate);
+        }
+
         mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -170,25 +239,48 @@ public class MainActivity extends AppCompatActivity
             public void read() {
                 try {
                     String tmp = myDevice.read();
+                    Toast.makeText(getApplicationContext(),
+                            "TMP:" + tmp, Toast.LENGTH_SHORT).show();
                     if(tmp == null) return;
                     tempInputData += tmp;
                     String jsonString = "";
                     if(tempInputData.contains("}") && tempInputData.contains("{")){
-                        jsonString = tempInputData.substring(tempInputData.indexOf("{"),
-                                tempInputData.indexOf("}") + 1);
+                        jsonString = tempInputData.substring(tempInputData.lastIndexOf("{"),
+                                tempInputData.lastIndexOf("}") + 1);
                     }
                     JSONObject json = new JSONObject(jsonString);
-                    double temperature = json.getDouble("TEMP");
-                    double humidity = json.getDouble("HUMIDITY");
-                    boolean occupied = json.getBoolean("OCCUPIED");
+                    try {
+                        double temperature = json.getDouble("TEMP");
+                        lastTemperature = temperature;
+                    }catch(Exception e){}
+                    try {
+                        double humidity = json.getDouble("HUMIDITY");
+                        lastHumidity = humidity;
+                    }catch(Exception e){}
+                    try {
+                        boolean occupied = json.getBoolean("OCCUPIED");
+                        lastOccupied = occupied;
+                    }catch(Exception e){}
+                    try {
+                        double severity = json.getDouble("SEVERITY");
+                        lastSeverity = severity;
+                    }catch(Exception e){}
+
                     Toast.makeText(getApplicationContext(),
-                            "Temperature: " + temperature + "\nHumidity: " + humidity, Toast.LENGTH_SHORT).show();
+                            "Temperature: " + lastTemperature + "\nHumidity: " + lastHumidity + "\nSeverity: " + lastSeverity, Toast.LENGTH_SHORT).show();
                     TextView conditions_currentTemperature = (TextView) findViewById(R.id.conditions_currentTemperature);
                     TextView conditions_currentHumidity = (TextView) findViewById(R.id.conditions_currentHumidity);
                     TextView conditions_isOccupied = (TextView) findViewById(R.id.conditions_isOccupied);
-                    conditions_currentTemperature.setText(temperature + " °F");
-                    conditions_currentHumidity.setText(humidity + "  %");
-                    conditions_isOccupied.setText("" + occupied);
+                    if(lastTemperature > -1000) conditions_currentTemperature.setText(lastTemperature + " °F");
+                    if(lastHumidity > -1000) conditions_currentHumidity.setText(lastHumidity + "  %");
+                    conditions_isOccupied.setText("" + lastOccupied);
+                    int scalePos = ResourceMaster.preferences.getInt(Constants.SENSITIVITY_KEY,1);
+                    double scale = Constants.SCALE_CONSTANTS[scalePos];
+                    notificationTime = (long) (Math.max((lastSeverity * -10000/37 + 11110000/37)/scale,1));
+                    Log.e("NOTIFY_TAG", "" + notificationTime);
+                    if(lastSeverity > 0) {
+                        notificationDelayThread = new NotificationDelayThread(notificationTime);
+                    }
                     tempInputData = "";
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -199,8 +291,6 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void connected() {
-                notificationDelayThread = new NotificationDelayThread(notificationTime);
-                notificationTime /= 2;
                 Toast.makeText(getApplicationContext(),
                         "Connected", Toast.LENGTH_SHORT).show();
             }
@@ -208,12 +298,13 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void connecting() {
                 Toast.makeText(getApplicationContext(),
-                        "Connecting:" + bluetoothMAC, Toast.LENGTH_SHORT).show();
+                        "Connecting:" + ResourceMaster.preferences.getString(Constants.BLUETOOTH_MAC_KEY,"20:16:12:12:80:68"),
+                        Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void none() {
-                Log.e("TAG", "INSIDE NONE");
+                Log.e("BLUETOOTH_TAG", "INSIDE NONE");
                 try {
                     myDevice.close();
                     myDevice.reconnect();
@@ -228,43 +319,17 @@ public class MainActivity extends AppCompatActivity
         }
 
 
-        final TextView settings_temp_lower = (TextView) findViewById(R.id.settings_temp_lower);
-        final TextView settings_dew_point_lower = (TextView) findViewById(R.id.settings_dew_point_lower);
+        final TextView sensitivity_setting = (TextView) findViewById(R.id.sensitivity_setting);
 
-        settings_temp_lower.setText("" + ResourceMaster.preferences.getInt(Constants.TEMPERATURE_THRESHOLD_KEY, 0));
-        settings_dew_point_lower.setText("" + ResourceMaster.preferences.getInt(Constants.DEW_POINT_THRESHOLD_KEY, 0));
-
-        final SeekBar humiditySeekBar = (SeekBar) findViewById(R.id.dewPointSeekBar);
-        humiditySeekBar.setProgress(ResourceMaster.preferences.getInt(Constants.DEW_POINT_THRESHOLD_KEY, 0));
-
-        humiditySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        sensitivity_setting.setText("" + Constants.SCALE_ALT_NAMES[ResourceMaster.preferences.getInt(Constants.SENSITIVITY_KEY, 0)]);
+        final SeekBar sensitivity_seekbar = (SeekBar) findViewById(R.id.sensitivity_seekbar);
+        sensitivity_seekbar.setProgress(ResourceMaster.preferences.getInt(Constants.SENSITIVITY_KEY, 0));
+        sensitivity_seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if(fromUser){
-                    settings_dew_point_lower.setText("" + progress);
-                    ResourceMaster.tempPreferenceEditor.putInt(Constants.DEW_POINT_THRESHOLD_KEY, progress);
-                    ResourceMaster.tempPreferenceEditor.commit();
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-        final SeekBar temperatureSeekBar = (SeekBar) findViewById(R.id.temperature_seekbar);
-        temperatureSeekBar.setProgress(ResourceMaster.preferences.getInt(Constants.TEMPERATURE_THRESHOLD_KEY, 0));
-        temperatureSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(fromUser){
-                    settings_temp_lower.setText("" + progress);
-                    ResourceMaster.tempPreferenceEditor.putInt(Constants.TEMPERATURE_THRESHOLD_KEY, progress);
+                    sensitivity_setting.setText("" + Constants.SCALE_ALT_NAMES[progress]);
+                    ResourceMaster.tempPreferenceEditor.putInt(Constants.SENSITIVITY_KEY, progress);
                     ResourceMaster.tempPreferenceEditor.commit();
                 }
             }
@@ -285,7 +350,6 @@ public class MainActivity extends AppCompatActivity
         adaptiveHumiditySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Toast.makeText(getApplicationContext(), "" + isChecked, Toast.LENGTH_SHORT).show();
-                humiditySeekBar.setEnabled(isChecked);
                 ResourceMaster.tempPreferenceEditor.putBoolean(Constants.ADAPTIVE_HUMIDITY_STATE_KEY, isChecked);
                 ResourceMaster.tempPreferenceEditor.commit();
             }
@@ -317,8 +381,8 @@ public class MainActivity extends AppCompatActivity
                         ResourceMaster.tempPreferences.getBoolean(Constants.ADAPTIVE_HUMIDITY_STATE_KEY, false));
                 ResourceMaster.preferenceEditor.putString(Constants.BLUETOOTH_MAC_KEY,
                         ResourceMaster.tempPreferences.getString(Constants.BLUETOOTH_MAC_KEY, "Dummy MAC Addr"));
-                ResourceMaster.preferenceEditor.putInt(Constants.TEMPERATURE_THRESHOLD_KEY,
-                        ResourceMaster.tempPreferences.getInt(Constants.TEMPERATURE_THRESHOLD_KEY, 80));
+                ResourceMaster.preferenceEditor.putInt(Constants.SENSITIVITY_KEY,
+                        ResourceMaster.tempPreferences.getInt(Constants.SENSITIVITY_KEY, 0));
                 ResourceMaster.preferenceEditor.putInt(Constants.DEW_POINT_THRESHOLD_KEY,
                         ResourceMaster.tempPreferences.getInt(Constants.DEW_POINT_THRESHOLD_KEY, 80));
                 ResourceMaster.preferenceEditor.putBoolean(Constants.VIBRATE_MODE_KEY,
@@ -337,8 +401,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 final JSONObject json = new JSONObject();
                 try {
-                    json.put("TEMP MIN", ResourceMaster.preferences.getInt(Constants.TEMPERATURE_THRESHOLD_KEY,0));
-                    json.put("DEW POINT MIN", ResourceMaster.preferences.getInt(Constants.DEW_POINT_THRESHOLD_KEY,0));
+                    json.put("SENSITIVITY", Constants.SCALE_CONSTANTS[ResourceMaster.preferences.getInt(Constants.SENSITIVITY_KEY, 0)]);
                     json.put("ADAPTIVE HUMIDITY", ResourceMaster.preferences.getBoolean(Constants.ADAPTIVE_HUMIDITY_STATE_KEY, false));
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -438,8 +501,6 @@ public class MainActivity extends AppCompatActivity
 
         Switch adaptiveHumiditySwitch = (Switch)findViewById(R.id.adaptiveHumidityMode);
         boolean isAdaptiveHumidityMode = adaptiveHumiditySwitch.isChecked();
-        SeekBar humiditySeekBar = (SeekBar) findViewById(R.id.dewPointSeekBar);
-        humiditySeekBar.setEnabled(isAdaptiveHumidityMode);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -470,5 +531,34 @@ public class MainActivity extends AppCompatActivity
     public void onDestroy() {
         // TODO: Consider closing sockets
         super.onDestroy();
+    }
+
+    public static class AlarmReceiver extends BroadcastReceiver {
+
+        public AlarmReceiver(){
+            Log.e("ALARM_TAG", "MADE RECEIVER");
+        }
+        @Override
+        public void onReceive(Context context, Intent intent){
+            Log.e("ALARM_TAG","ALARM RECEIVED");
+
+            try {
+                new NewsHTTPRequest(m_context).execute();
+            }catch (Exception e){
+                Log.e("ALARM_TAG", "I TRIED");
+            }
+
+            try {
+                double longitude = location.getLongitude();
+                double latitude = location.getLatitude();
+                Log.e("GPS_TAG", latitude + "," + longitude);
+                new WeatherHTTPRequest(m_context).execute(context);
+            }catch (Exception e){
+                Log.e("ALARM_TAG", "I TRIED");
+            }
+
+
+
+        }
     }
 }

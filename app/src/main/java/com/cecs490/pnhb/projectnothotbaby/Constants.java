@@ -12,5 +12,9 @@ public class Constants {
     public static final String DEW_POINT_THRESHOLD_KEY = "Dew Point Threshold";
     public static final String VIBRATE_MODE_KEY = "Vibrate Mode";
     public static final String SOUND_MODE_KEY = "Sound Mode";
+    public static final String SENSITIVITY_KEY = "Sensitivity";
+
+    public static final double[] SCALE_CONSTANTS = {0.9, 1.0, 1.25, 1.5, 2.0};
+    public static final String[] SCALE_ALT_NAMES = {"MIN","LOW","MED","HIGH","MAX"};
 
 }

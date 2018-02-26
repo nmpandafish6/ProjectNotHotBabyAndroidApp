@@ -1,4 +1,4 @@
-#Sun Feb 11 17:09:56 PST 2018
+#Sun Feb 25 20:50:17 PST 2018
 base.0=C\:\\Users\\Nicolas\\AndroidStudioProjects\\ProjectNotHotBaby\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10000\\instant-run-bootstrap_6efc246dbdf0d095e500af810b35864ea4f5af04
 renamed.1=classes2.dex
 renamed.0=classes.dex
