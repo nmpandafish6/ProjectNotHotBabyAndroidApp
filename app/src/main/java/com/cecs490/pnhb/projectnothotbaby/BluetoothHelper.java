@@ -53,7 +53,6 @@ public class BluetoothHelper {
     private ConnectThread connectThread;
     private boolean isConnected = false;
     private boolean wasConnected = false;
-    private boolean okay = true;
 
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private static final String NAME = "PNHB";
@@ -95,7 +94,7 @@ public class BluetoothHelper {
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if(okay && mBehavior != null) {
+            if(mBehavior != null) {
                 switch (msg.what) {
                     case BluetoothHelper.MESSAGE_STATE_CHANGE:
                         switch (msg.arg1) {
@@ -148,7 +147,6 @@ public class BluetoothHelper {
     }
 
     private class ConnectThread extends Thread {
-        private BluetoothServerSocket serverSocket;
         public ConnectThread() {
             try {
                 mmSocket = mDevice.createRfcommSocketToServiceRecord(MY_UUID);
@@ -214,6 +212,10 @@ public class BluetoothHelper {
                 } catch (Exception e) {
                     isConnected = false;
                     mHandler.obtainMessage(BluetoothHelper.MESSAGE_STATE_CHANGE, BluetoothHelper.STATE_NONE, -1).sendToTarget();
+                    acceptThread = new AcceptThread();
+                    acceptThread.start();
+                    connectThread = new ConnectThread();
+                    connectThread.start();
                     running = false;
                     break;
                 }

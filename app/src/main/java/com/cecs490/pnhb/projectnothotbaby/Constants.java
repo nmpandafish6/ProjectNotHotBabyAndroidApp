@@ -17,4 +17,6 @@ public class Constants {
     public static final double[] SCALE_CONSTANTS = {0.9, 1.0, 1.25, 1.5, 2.0};
     public static final String[] SCALE_ALT_NAMES = {"MIN","LOW","MED","HIGH","MAX"};
 
+
+    public static final long[] VIBRATE = {0,100,200,300};
 }
