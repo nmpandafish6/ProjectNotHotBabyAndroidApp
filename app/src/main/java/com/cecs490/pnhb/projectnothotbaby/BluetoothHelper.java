@@ -28,11 +28,11 @@ import java.util.UUID;
 public class BluetoothHelper {
 
     public interface BluetoothSocketBehavior {
-        public void write();
-        public void read();
-        public void connected();
-        public void connecting();
-        public void none();
+        void write();
+        void read();
+        void connected();
+        void connecting();
+        void none();
     }
     public static final int MESSAGE_STATE_CHANGE = 0;
     public static final int MESSAGE_WRITE = 1;
@@ -43,13 +43,17 @@ public class BluetoothHelper {
 
     private OutputStream m_outputStream;
     private InputStream m_inStream;
-    private BluetoothDevice mDevice;
+    public BluetoothDevice mDevice;
     private BluetoothServerSocket mmServerSocket;
     private BluetoothSocket mmSocket;
     private BluetoothSocketBehavior mBehavior;
     private ConnectedThread m_connectedThread;
     public static BluetoothAdapter mblue;
+    private AcceptThread acceptThread;
+    private ConnectThread connectThread;
+    private boolean isConnected = false;
     private boolean wasConnected = false;
+    private boolean okay = true;
 
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private static final String NAME = "PNHB";
@@ -61,10 +65,10 @@ public class BluetoothHelper {
     public BluetoothHelper(BluetoothDevice device, BluetoothSocketBehavior behavior) throws IOException {
         mBehavior = behavior;
         mDevice = device;
-        AcceptThread acceptThread = new AcceptThread();
+        acceptThread = new AcceptThread();
         acceptThread.start();
-        ConnectThread con = new ConnectThread();
-        con.start();
+        connectThread = new ConnectThread();
+        connectThread.start();
     }
 
     public void write(String s) throws IOException {
@@ -87,114 +91,57 @@ public class BluetoothHelper {
         }
     }
 
-    public void close(){
-        isConnected = false;
-        isConnecting = false;
-        if(m_connectedThread != null)
-            m_connectedThread.running = false;
-        try {
-            mmSocket.close();
-            mmServerSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    // TODO: TEST!!!
-    /*
-    private static void pairDevice(BluetoothDevice device) {
-        try {
-            Method method = device.getClass().getMethod("createBond", (Class[]) null);
-            method.invoke(device, (Object[]) null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    */
 
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            Log.e("BLUETOOTH_TAG", "HANDLING MESSAGE:" + msg.what);
-            switch (msg.what) {
-                case BluetoothHelper.MESSAGE_STATE_CHANGE:
-                    switch (msg.arg1){
-                        case BluetoothHelper.STATE_CONNECTED:
-                            mBehavior.connected();
-                            break;
-                        case BluetoothHelper.STATE_CONNECTING:
-                            mBehavior.connecting();
-                            break;
-                        case BluetoothHelper.STATE_NONE:
-                            if(wasConnected)
-                                mBehavior.none();
-                            break;
-                    }
-                    break;
-                case BluetoothHelper.MESSAGE_WRITE:
-                    mBehavior.write();
-                    break;
-                case BluetoothHelper.MESSAGE_READ:
-                    mBehavior.read();
-                    break;
+            if(okay && mBehavior != null) {
+                switch (msg.what) {
+                    case BluetoothHelper.MESSAGE_STATE_CHANGE:
+                        switch (msg.arg1) {
+                            case BluetoothHelper.STATE_CONNECTED:
+                                mBehavior.connected();
+                                break;
+                            case BluetoothHelper.STATE_CONNECTING:
+                                mBehavior.connecting();
+                                break;
+                            case BluetoothHelper.STATE_NONE:
+                                if (wasConnected)
+                                    mBehavior.none();
+                                break;
+                        }
+                        break;
+                    case BluetoothHelper.MESSAGE_WRITE:
+                        mBehavior.write();
+                        break;
+                    case BluetoothHelper.MESSAGE_READ:
+                        mBehavior.read();
+                        break;
+                }
             }
         }
     };
 
-    public void reconnect(){
-        new ReconnectThread().start();
-    }
-
-    private static boolean reconnectThreadExists = false;
-    private static boolean isConnected = false;
-    private static boolean isConnecting = false;
-    private class ReconnectThread extends Thread {
-
-        public ReconnectThread() {
-        }
-
-        public void run() {
-            if(!reconnectThreadExists && !isConnected && !isConnecting){
-                reconnectThreadExists = true;
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                Log.e("BLUETOOTH_TAG", "RECONNECT THREAD");
-                close();
-                AcceptThread acceptThread = new AcceptThread();
-                acceptThread.start();
-                ConnectThread con = new ConnectThread();
-                con.start();
-                reconnectThreadExists = false;
-            }
-
-        }
+    public boolean getIsConnected(){
+        return isConnected;
     }
 
     private class AcceptThread extends Thread {
         public AcceptThread() {
             try{
                 mmServerSocket = mblue.listenUsingRfcommWithServiceRecord(NAME, MY_UUID);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Log.e("BLUETOOTH_TAG", "ACCEPT ERROR" + e.getMessage());
             }
         }
 
         public void run() {
-            isConnecting = true;
             try {
                 mmSocket = mmServerSocket.accept();
                 m_connectedThread = new ConnectedThread();
-                isConnecting = false;
-                isConnected = true;
-                wasConnected = true;
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Log.e("BLUETOOTH_TAG", "ACCEPT FAIL: " + e.getMessage());
                 e.printStackTrace();
-                reconnect();
                 return;
             }
         }
@@ -205,13 +152,12 @@ public class BluetoothHelper {
         public ConnectThread() {
             try {
                 mmSocket = mDevice.createRfcommSocketToServiceRecord(MY_UUID);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Log.e("BLUETOOTH_TAG", "listen() failed", e);
             }
         }
 
         public void run() {
-            isConnecting = true;
             // Cancel discovery because it will slow down the connection
             mblue.cancelDiscovery();
             mHandler.obtainMessage(BluetoothHelper.MESSAGE_STATE_CHANGE, BluetoothHelper.STATE_CONNECTING, -1).sendToTarget();
@@ -219,31 +165,14 @@ public class BluetoothHelper {
                 // Connect the device through the socket. This will block
                 // until it succeeds or throws an exception
                 mmSocket.connect();
-            } catch (IOException connectException) {
+            } catch (Exception connectException) {
                 // Unable to connect; close the socket and get out
                 Log.e("BLUETOOTH_TAG", "CONNECT FAILED: " + connectException.getMessage());
                 connectException.printStackTrace();
-                try {
-                    mmSocket.close();
-                } catch (IOException closeException) {
-                    Log.e("BLUETOOTH_TAG", "CLOSE FAILED: " + closeException.getMessage());
-                }
-                isConnecting = false;
-                reconnect();
                 return;
             }
 
             m_connectedThread = new ConnectedThread();
-            isConnected = true;
-            wasConnected = true;
-            isConnecting = false;
-        }
-
-        /** Will cancel an in-progress connection, and close the socket */
-        public void cancel() {
-            try {
-                mmSocket.close();
-            } catch (IOException e) {}
         }
     }
 
@@ -251,16 +180,20 @@ public class BluetoothHelper {
         private String inputString = null;
         private boolean running = true;
         public ConnectedThread() {
+            isConnected = true;
             mHandler.obtainMessage(BluetoothHelper.MESSAGE_STATE_CHANGE, BluetoothHelper.STATE_CONNECTED, -1).sendToTarget();
             try {
-                m_inStream = mmSocket.getInputStream();
-                m_outputStream = mmSocket.getOutputStream();
-            } catch (IOException e) {
+                if(mmSocket != null) {
+                    m_inStream = mmSocket.getInputStream();
+                }
+                if(mmSocket != null) {
+                    m_outputStream = mmSocket.getOutputStream();
+                }
+            } catch (Exception e) {
                 Log.e("BLUETOOTH_TAG","IO ERROR " + e.getMessage());
             }
-            //this.write("HELLO".getBytes());
             this.start();
-
+            wasConnected = true;
 
         }
 
@@ -278,30 +211,21 @@ public class BluetoothHelper {
                         inputString = tmp;
                     }
                     mHandler.obtainMessage(BluetoothHelper.MESSAGE_READ, -1, -1).sendToTarget();
-                } catch (IOException e) {
-                    Log.e("BLUETOOTH_TAG", "ERROR WHILE CONNECTED: " + e.getMessage());
-                    Log.e("BLUETOOTH_TAG", "TRYING TO RECONNECT");
+                } catch (Exception e) {
                     isConnected = false;
                     mHandler.obtainMessage(BluetoothHelper.MESSAGE_STATE_CHANGE, BluetoothHelper.STATE_NONE, -1).sendToTarget();
                     running = false;
                     break;
-
                 }
             }
-            try {
-                m_inStream.close();
-                m_outputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
         }
+
         public void write(byte[] bytes) {
             if (m_outputStream != null) {
                 mHandler.obtainMessage(BluetoothHelper.MESSAGE_WRITE, -1, -1).sendToTarget();
                 try {
                     m_outputStream.write(bytes);
-                } catch (IOException e) {
+                } catch (Exception e) {
                 }
             }
         }

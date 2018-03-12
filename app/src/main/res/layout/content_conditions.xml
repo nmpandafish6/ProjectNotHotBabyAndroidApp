@@ -97,6 +97,11 @@
 
     </GridLayout>
 
+    <WebView
+        android:id="@+id/test_webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <ImageView
         android:id="@+id/imageView3"
         android:layout_width="match_parent"
