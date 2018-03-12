@@ -1,0 +1,135 @@
+-- Merging decision tree log ---
+manifest
+ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:2:1-37:12
+	package
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:3:5-49
+		INJECTED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:2:11-69
+	android:versionCode
+		INJECTED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml
+uses-permission#android.permission.BLUETOOTH
+ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:5:5-68
+	android:name
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:5:22-65
+uses-permission#android.permission.BLUETOOTH_ADMIN
+ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:6:5-74
+	android:name
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:6:22-71
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:7:5-78
+	android:name
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:7:22-76
+uses-permission#android.permission.ACCESS_COARSE_LOCATION
+ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:8:5-80
+	android:name
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:8:22-78
+uses-permission#android.permission.INTERNET
+ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:9:5-66
+	android:name
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:9:22-64
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:10:5-78
+	android:name
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:10:22-76
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:11:5-80
+	android:name
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:11:22-78
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:12:5-79
+	android:name
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:12:22-77
+application
+ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:14:5-35:19
+MERGED from [com.android.support:design:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\4b48e432d9c8b032cb08c5e3fbe30f03fce4911d\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:appcompat-v7:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\d0edbd42827d1bb4d84ea1356ec54b0411e25064\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:animated-vector-drawable:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\1e664621215dbe9d72587cbc577f05f2b71d83d7\output\AndroidManifest.xml:26:5-20
+MERGED from [com.android.support:support-vector-drawable:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\5734f49c44feebe5e9165f206283be41f0ebb2e4\output\AndroidManifest.xml:26:5-20
+MERGED from [com.android.support:transition:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\90a8b4f5f38af12eb3b2bfea14fa4f47e70dcfaa\output\AndroidManifest.xml:26:5-20
+MERGED from [com.android.support:support-v4:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\c14ddde97dd98cc7be0f34c197a9828f156f2bf7\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-media-compat:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\51199d3081d5a24fc25aa43dbd20096c202fbadf\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-fragment:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\4f1b676b1b64d8932118da51044a2f9665e02238\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-core-ui:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\ea455b9df3b8b8fc8c6b7b0ece7cb1ee4c3b1ce4\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-core-utils:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\dd7b2aa03ce8176c386b31b571b98c4792ba2875\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-compat:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\d26993ac1ba249ce3791bdaf6f768f64e3e5635d\output\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] C:\Users\Nicolas\.android\build-cache\db7efaec73a0d14996ea56bd75d807e7e5d2cf80\output\AndroidManifest.xml:9:5-20
+	android:label
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:17:9-41
+	android:supportsRtl
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:19:9-35
+	android:roundIcon
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:18:9-54
+	android:allowBackup
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:15:9-35
+	android:icon
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:16:9-43
+	android:theme
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:20:9-40
+activity#com.cecs490.pnhb.projectnothotbaby.MainActivity
+ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:21:9-30:20
+	android:label
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:23:13-45
+	android:theme
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:24:13-56
+	android:name
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:22:13-41
+intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
+ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:25:13-29:29
+action#android.intent.action.MAIN
+ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:26:17-69
+	android:name
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:26:25-66
+category#android.intent.category.LAUNCHER
+ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:28:17-77
+	android:name
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:28:27-74
+receiver#com.cecs490.pnhb.projectnothotbaby.MainActivity$AlarmReceiver
+ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:32:9-34:20
+	android:name
+		ADDED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml:32:19-61
+uses-sdk
+INJECTED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+MERGED from [com.android.support:design:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\4b48e432d9c8b032cb08c5e3fbe30f03fce4911d\output\AndroidManifest.xml:21:5-23:62
+MERGED from [com.android.support:appcompat-v7:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\d0edbd42827d1bb4d84ea1356ec54b0411e25064\output\AndroidManifest.xml:21:5-23:78
+MERGED from [com.android.support:animated-vector-drawable:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\1e664621215dbe9d72587cbc577f05f2b71d83d7\output\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\5734f49c44feebe5e9165f206283be41f0ebb2e4\output\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:recyclerview-v7:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\d56ebd1f0a9d56bb55108cc6d603a8d2e69b3a72\output\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:transition:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\90a8b4f5f38af12eb3b2bfea14fa4f47e70dcfaa\output\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-v4:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\c14ddde97dd98cc7be0f34c197a9828f156f2bf7\output\AndroidManifest.xml:21:5-23:54
+MERGED from [com.android.support:support-media-compat:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\51199d3081d5a24fc25aa43dbd20096c202fbadf\output\AndroidManifest.xml:21:5-23:63
+MERGED from [com.android.support:support-fragment:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\4f1b676b1b64d8932118da51044a2f9665e02238\output\AndroidManifest.xml:21:5-23:60
+MERGED from [com.android.support:support-core-ui:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\ea455b9df3b8b8fc8c6b7b0ece7cb1ee4c3b1ce4\output\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-core-utils:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\dd7b2aa03ce8176c386b31b571b98c4792ba2875\output\AndroidManifest.xml:21:5-23:61
+MERGED from [com.android.support:support-compat:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\d26993ac1ba249ce3791bdaf6f768f64e3e5635d\output\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] C:\Users\Nicolas\.android\build-cache\db7efaec73a0d14996ea56bd75d807e7e5d2cf80\output\AndroidManifest.xml:5:5-7:41
+	tools:overrideLibrary
+		ADDED from [com.android.support:design:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\4b48e432d9c8b032cb08c5e3fbe30f03fce4911d\output\AndroidManifest.xml:23:9-59
+	android:targetSdkVersion
+		INJECTED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Nicolas\AndroidStudioProjects\ProjectNotHotBaby\app\src\main\AndroidManifest.xml
+meta-data#android.support.VERSION
+ADDED from [com.android.support:design:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\4b48e432d9c8b032cb08c5e3fbe30f03fce4911d\output\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:appcompat-v7:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\d0edbd42827d1bb4d84ea1356ec54b0411e25064\output\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:animated-vector-drawable:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\1e664621215dbe9d72587cbc577f05f2b71d83d7\output\AndroidManifest.xml:22:5-24:41
+MERGED from [com.android.support:support-vector-drawable:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\5734f49c44feebe5e9165f206283be41f0ebb2e4\output\AndroidManifest.xml:22:5-24:41
+MERGED from [com.android.support:recyclerview-v7:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\d56ebd1f0a9d56bb55108cc6d603a8d2e69b3a72\output\AndroidManifest.xml:22:5-24:41
+MERGED from [com.android.support:transition:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\90a8b4f5f38af12eb3b2bfea14fa4f47e70dcfaa\output\AndroidManifest.xml:22:5-24:41
+MERGED from [com.android.support:support-v4:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\c14ddde97dd98cc7be0f34c197a9828f156f2bf7\output\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-media-compat:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\51199d3081d5a24fc25aa43dbd20096c202fbadf\output\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-fragment:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\4f1b676b1b64d8932118da51044a2f9665e02238\output\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-core-ui:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\ea455b9df3b8b8fc8c6b7b0ece7cb1ee4c3b1ce4\output\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-core-utils:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\dd7b2aa03ce8176c386b31b571b98c4792ba2875\output\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-compat:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\d26993ac1ba249ce3791bdaf6f768f64e3e5635d\output\AndroidManifest.xml:25:5-27:41
+	android:value
+		ADDED from [com.android.support:design:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\4b48e432d9c8b032cb08c5e3fbe30f03fce4911d\output\AndroidManifest.xml:27:9-38
+	android:name
+		ADDED from [com.android.support:design:26.0.0-alpha1] C:\Users\Nicolas\.android\build-cache\4b48e432d9c8b032cb08c5e3fbe30f03fce4911d\output\AndroidManifest.xml:26:9-47
