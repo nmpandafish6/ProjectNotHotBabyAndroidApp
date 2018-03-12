@@ -52,12 +52,12 @@
         "source": "C:\\Users\\Nicolas\\.android\\build-cache\\d0edbd42827d1bb4d84ea1356ec54b0411e25064\\output\\res\\drawable-hdpi-v4\\abc_ic_star_black_36dp.png"
     },
     {
-        "merged": "C:\\Users\\Nicolas\\AndroidStudioProjects\\ProjectNotHotBaby\\app\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4\\notify_panel_notification_icon_bg.png",
-        "source": "C:\\Users\\Nicolas\\.android\\build-cache\\d0edbd42827d1bb4d84ea1356ec54b0411e25064\\output\\res\\drawable-hdpi-v4\\notify_panel_notification_icon_bg.png"
-    },
-    {
         "merged": "C:\\Users\\Nicolas\\AndroidStudioProjects\\ProjectNotHotBaby\\app\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4\\abc_list_focused_holo.9.png",
         "source": "C:\\Users\\Nicolas\\.android\\build-cache\\d0edbd42827d1bb4d84ea1356ec54b0411e25064\\output\\res\\drawable-hdpi-v4\\abc_list_focused_holo.9.png"
+    },
+    {
+        "merged": "C:\\Users\\Nicolas\\AndroidStudioProjects\\ProjectNotHotBaby\\app\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4\\notify_panel_notification_icon_bg.png",
+        "source": "C:\\Users\\Nicolas\\.android\\build-cache\\d0edbd42827d1bb4d84ea1356ec54b0411e25064\\output\\res\\drawable-hdpi-v4\\notify_panel_notification_icon_bg.png"
     },
     {
         "merged": "C:\\Users\\Nicolas\\AndroidStudioProjects\\ProjectNotHotBaby\\app\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4\\abc_list_longpressed_holo.9.png",

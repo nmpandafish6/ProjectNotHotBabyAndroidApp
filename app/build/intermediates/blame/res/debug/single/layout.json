@@ -20,12 +20,12 @@
         "source": "C:\\Users\\Nicolas\\.android\\build-cache\\d0edbd42827d1bb4d84ea1356ec54b0411e25064\\output\\res\\layout\\abc_list_menu_item_layout.xml"
     },
     {
-        "merged": "C:\\Users\\Nicolas\\AndroidStudioProjects\\ProjectNotHotBaby\\app\\build\\intermediates\\res\\merged\\debug\\layout\\design_layout_snackbar_include.xml",
-        "source": "C:\\Users\\Nicolas\\.android\\build-cache\\4b48e432d9c8b032cb08c5e3fbe30f03fce4911d\\output\\res\\layout\\design_layout_snackbar_include.xml"
-    },
-    {
         "merged": "C:\\Users\\Nicolas\\AndroidStudioProjects\\ProjectNotHotBaby\\app\\build\\intermediates\\res\\merged\\debug\\layout\\content_statistics.xml",
         "source": "C:\\Users\\Nicolas\\AndroidStudioProjects\\ProjectNotHotBaby\\app\\src\\main\\res\\layout\\content_statistics.xml"
+    },
+    {
+        "merged": "C:\\Users\\Nicolas\\AndroidStudioProjects\\ProjectNotHotBaby\\app\\build\\intermediates\\res\\merged\\debug\\layout\\design_layout_snackbar_include.xml",
+        "source": "C:\\Users\\Nicolas\\.android\\build-cache\\4b48e432d9c8b032cb08c5e3fbe30f03fce4911d\\output\\res\\layout\\design_layout_snackbar_include.xml"
     },
     {
         "merged": "C:\\Users\\Nicolas\\AndroidStudioProjects\\ProjectNotHotBaby\\app\\build\\intermediates\\res\\merged\\debug\\layout\\select_dialog_singlechoice_material.xml",
