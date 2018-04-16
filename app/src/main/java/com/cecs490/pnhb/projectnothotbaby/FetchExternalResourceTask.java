@@ -50,17 +50,12 @@ public class FetchExternalResourceTask extends AsyncTask<String, Integer, String
             int urlStart = Math.max(sUrl[0].indexOf("http://") + "http://".length(),
                     sUrl[0].indexOf("https://") + "https://".length());
             String fileName = sUrl[0].substring(urlStart);
-            //File outputFile = new File(, fileName);
-            //Log.e("FILE_TAG", outputFile.getAbsolutePath());
-            //boolean success = outputFile.createNewFile();
-            //Log.e("FILE_TAG", "CREATE FILE : " + success);
-            //output = new FileOutputStream(outputFile);
             fileName = fileName.replaceAll("/", "_");
             File file = new File(context.getFilesDir(), fileName);
             if(!file.exists()) {
                 output = this.context.openFileOutput(fileName, Context.MODE_PRIVATE);
 
-                byte data[] = new byte[4096];
+                byte data[] = new byte[8192];
                 int count;
                 while ((count = input.read(data)) != -1) {
                     // allow canceling with back button

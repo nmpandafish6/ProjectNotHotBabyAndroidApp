@@ -25,7 +25,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <include layout="@layout/content_main" />
         <include layout="@layout/content_home" />
         <include layout="@layout/content_conditions" />
         <include layout="@layout/content_news" />

@@ -13,8 +13,19 @@ public class Constants {
     public static final String VIBRATE_MODE_KEY = "Vibrate Mode";
     public static final String SOUND_MODE_KEY = "Sound Mode";
     public static final String SENSITIVITY_KEY = "Sensitivity";
+    public static final String INITIAL_CONTENT_DOWNLOADED_KEY = "DOWNLOADED";
+    public static final String LAST_DATE = "DATE";
+
+
+    public static final String LAST_ICON_URI_KEY = "ICON_URI";
+    public static final String LAST_WEATHER_KEY = "WEATHER";
+    public static final String LAST_WEATHER_LOCATION_KEY = "WEATHER_LOCATION";
+    public static final String LAST_WEATHER_CONDITION_KEY = "WEATHER_CONDITION";
 
     public static final double[] SCALE_CONSTANTS = {0.9, 1.0, 1.25, 1.5, 2.0};
     public static final String[] SCALE_ALT_NAMES = {"MIN","LOW","MED","HIGH","MAX"};
 
+    public static final int MY_PERMISSIONS_REQUEST_COURSE_LOCATION = 0;
+
+    public static final long[] VIBRATE = {0,100,200,300};
 }
