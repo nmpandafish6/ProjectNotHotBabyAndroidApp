@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.cecs490.pnhb.projectnothotbaby.ResourceMaster.mFeedModelList;
+import static com.cecs490.pnhb.projectnothotbaby.ResourceMaster.news_adapter;
+
 /**
  * Created by Nicolas on 2/25/2018.
  */
@@ -31,11 +34,10 @@ public class NewsHTTPRequest extends AsyncTask<Void, Void, Boolean> {
 
 
     private Context m_context;
-    private List<RssFeedModel> mFeedModelList;
+
     private String mFeedTitle;
     private String mFeedLink;
     private String mFeedDescription;
-    private RecyclerView mRecyclerView;
     private ArrayList<String> fetchQueue = new ArrayList<>();
 
     public NewsHTTPRequest(Context context){
@@ -47,7 +49,20 @@ public class NewsHTTPRequest extends AsyncTask<Void, Void, Boolean> {
         String fileName = "nothotbabycecs490.tumblr.com_rss";
         try {
             FileInputStream inputStream =  m_context.openFileInput(fileName);
-            mFeedModelList = parseFeed(inputStream);
+            news_adapter = new RssFeedListAdapter(mFeedModelList, ResourceMaster.m_context);
+            ResourceMaster.m_activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    RecyclerView mRecyclerView = (RecyclerView) (ResourceMaster.m_activity).findViewById(R.id.news_feed);
+                    mRecyclerView.setAdapter(news_adapter);
+                    news_adapter.notifyDataSetChanged();
+
+                    RecyclerView mRecyclerView2 = (RecyclerView) (ResourceMaster.m_activity).findViewById(R.id.home_feed);
+                    mRecyclerView2.setAdapter(news_adapter);
+                    news_adapter.notifyDataSetChanged();
+                }
+            });
+            parseFeed(inputStream);
             return true;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -81,9 +96,19 @@ public class NewsHTTPRequest extends AsyncTask<Void, Void, Boolean> {
                     }
                     Log.e("FETCH_TAG", "I FETCHED ALL THE THINGS");
                     try {
-                        mRecyclerView = (RecyclerView) ((Activity) m_context).findViewById(R.id.news_feed);
-                        mRecyclerView.setAdapter(new RssFeedListAdapter(mFeedModelList, m_context));
+                        ResourceMaster.m_activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                RecyclerView mRecyclerView = (RecyclerView) (ResourceMaster.m_activity).findViewById(R.id.news_feed);
+                                news_adapter.notifyDataSetChanged();
+
+                                RecyclerView mRecyclerView2 = (RecyclerView) (ResourceMaster.m_activity).findViewById(R.id.home_feed);
+                                news_adapter.notifyDataSetChanged();
+                            }
+                        });
+
                     }catch(Exception e){
+                        Log.e("FETCH_TAG", e.getMessage());
                     }
                 }
             });
@@ -97,8 +122,8 @@ public class NewsHTTPRequest extends AsyncTask<Void, Void, Boolean> {
         String link = null;
         String description = null;
         boolean isItem = false;
-        List<RssFeedModel> items = new ArrayList<>();
 
+        ResourceMaster.mFeedModelList.removeAll(ResourceMaster.mFeedModelList);
         try {
             XmlPullParser xmlPullParser = Xml.newPullParser();
             xmlPullParser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -153,7 +178,7 @@ public class NewsHTTPRequest extends AsyncTask<Void, Void, Boolean> {
                     link += "";
                     if(isItem) {
                         RssFeedModel item = new RssFeedModel(title, link, description);
-                        items.add(item);
+                        mFeedModelList.add(item);
                     }
                     else {
                         mFeedTitle = title;
@@ -167,7 +192,7 @@ public class NewsHTTPRequest extends AsyncTask<Void, Void, Boolean> {
                     isItem = false;
                 }
             }
-            return items;
+            return mFeedModelList;
         } finally {
             inputStream.close();
         }

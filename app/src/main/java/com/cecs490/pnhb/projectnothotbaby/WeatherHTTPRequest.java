@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -27,11 +29,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.cecs490.pnhb.projectnothotbaby.ResourceMaster.news_adapter;
+
 /**
  * Created by Nicolas on 2/25/2018.
  */
 
-public class WeatherHTTPRequest extends AsyncTask<Context, Void, String> {
+public class WeatherHTTPRequest extends AsyncTask<Void, Void, String> {
 
     private Context m_context;
     private Bitmap mIcon11;
@@ -40,8 +44,7 @@ public class WeatherHTTPRequest extends AsyncTask<Context, Void, String> {
         this.m_context = context;
     }
     @Override
-    protected String doInBackground(Context... params) {
-        Context context = params[0];
+    protected String doInBackground(Void... voids) {
         URL url = null;
         String iconURI = "";
         try {
@@ -93,23 +96,51 @@ public class WeatherHTTPRequest extends AsyncTask<Context, Void, String> {
             }
             if(mostRepeated != null)
                 iconURI = mostRepeated.getKey();
+            String urldisplay = "http://openweathermap.org/img/w/" + iconURI + ".png";
+            ResourceMaster.preferenceEditor.putString(Constants.LAST_ICON_URI_KEY, urldisplay);
+            ResourceMaster.preferenceEditor.commit();
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        String urldisplay = "http://openweathermap.org/img/w/" + iconURI + ".png";
-        mIcon11 = null;
-        try {
-            InputStream in = new java.net.URL(urldisplay).openStream();
-            mIcon11 = BitmapFactory.decodeStream(in);
-        } catch (Exception e) {
-            Log.e("Error", e.getMessage());
-            e.printStackTrace();
-        }
+
         return data;
     }
 
     protected void onPostExecute(String html){
+        final String urldisplay = ResourceMaster.preferences.getString(Constants.LAST_ICON_URI_KEY, "");
+
+
+        Thread waitForReadyThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                FetchExternalResourceTask fetchTask = new FetchExternalResourceTask(ResourceMaster.m_context);
+                fetchTask.execute(urldisplay);
+                while(!fetchTask.isCompleted()) {}
+                ResourceMaster.m_activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mIcon11 = null;
+                        int urlStart = Math.max(urldisplay.indexOf("http://") + "http://".length(),
+                                urldisplay.indexOf("https://") + "https://".length());
+                        String fileName = urldisplay.substring(urlStart);
+                        fileName = fileName.replaceAll("/", "_");
+                        Log.e("IMAGE_GETTER_TAG", fileName);
+                        File file = new File(ResourceMaster.m_context.getFilesDir(), fileName);
+                        Log.e("IMAGE_GETTER_TAG", file.getAbsolutePath());
+                        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+                        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(),bmOptions);
+                        ImageView news_weather_icon = (ImageView) ((Activity)m_context).findViewById(R.id.news_weather_icon);
+                        news_weather_icon.setImageBitmap(bitmap);
+                        ImageView home_weather_icon = (ImageView) ((Activity)m_context).findViewById(R.id.home_weather_icon);
+                        home_weather_icon.setImageBitmap(bitmap);
+                    }
+                });
+            }
+        });
+        waitForReadyThread.start();
+
+
         double highTemp; String location;
         try {
             JSONObject json = new JSONObject(html);
@@ -126,10 +157,6 @@ public class WeatherHTTPRequest extends AsyncTask<Context, Void, String> {
                 if(c == null) c = new Integer(0);
                 c++;
                 weather.put(weatherTemp,c);
-                //Log.e("WEATHER_TAG", "" + time);
-                //Log.e("WEATHER_TAG", weather);
-                //Log.e("WEATHER_TAG", "" + temp);
-                //Log.e("WEATHER_TAG", "" + location);
 
             }
             Map.Entry<String, Integer> mostRepeated = null;
@@ -145,12 +172,25 @@ public class WeatherHTTPRequest extends AsyncTask<Context, Void, String> {
             TextView news_location = (TextView) ((Activity)m_context).findViewById(R.id.news_location);
             TextView news_weather = (TextView)  ((Activity)m_context).findViewById(R.id.news_weather);
             TextView news_weather_condtion = (TextView)  ((Activity)m_context).findViewById(R.id.news_weather_conditions);
-            news_location.setText(location);
-            news_weather.setText("High for Today:   " + Math.round(highTemp*10)/10+ "°F");
-            news_weather_condtion.setText(mostRepeated.getKey());
-            ImageView news_weather_icon = (ImageView) ((Activity)m_context).findViewById(R.id.news_weather_icon);
 
-            news_weather_icon.setImageBitmap(mIcon11);
+            ResourceMaster.preferenceEditor.putString(Constants.LAST_WEATHER_KEY, "High for Today:   " + Math.round(highTemp*10)/10+ "°F");
+            ResourceMaster.preferenceEditor.putString(Constants.LAST_WEATHER_CONDITION_KEY, mostRepeated.getKey());
+            ResourceMaster.preferenceEditor.putString(Constants.LAST_WEATHER_LOCATION_KEY, location);
+            ResourceMaster.preferenceEditor.commit();
+
+            news_location.setText( ResourceMaster.preferences.getString(Constants.LAST_WEATHER_LOCATION_KEY, ""));
+            news_weather.setText( ResourceMaster.preferences.getString(Constants.LAST_WEATHER_KEY, ""));
+            news_weather_condtion.setText( ResourceMaster.preferences.getString(Constants.LAST_WEATHER_CONDITION_KEY, ""));
+
+            TextView home_location = (TextView) ((Activity)m_context).findViewById(R.id.home_location);
+            TextView home_weather = (TextView)  ((Activity)m_context).findViewById(R.id.home_weather);
+            TextView home_weather_condtion = (TextView)  ((Activity)m_context).findViewById(R.id.home_weather_conditions);
+
+            home_location.setText( ResourceMaster.preferences.getString(Constants.LAST_WEATHER_LOCATION_KEY, ""));
+            home_weather.setText( ResourceMaster.preferences.getString(Constants.LAST_WEATHER_KEY, ""));
+            home_weather_condtion.setText( ResourceMaster.preferences.getString(Constants.LAST_WEATHER_CONDITION_KEY, ""));
+
+            Log.e("BITMAP_TAG","BITMAP SET");
         } catch (JSONException e) {
             e.printStackTrace();
         }

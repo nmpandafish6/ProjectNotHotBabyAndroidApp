@@ -24,7 +24,7 @@ public class AlarmReceiver extends BroadcastReceiver{
             double longitude = location.getLongitude();
             double latitude = location.getLatitude();
             Log.e("GPS_TAG", latitude + "," + longitude);
-            new WeatherHTTPRequest(ResourceMaster.m_context).execute(context);
+            new WeatherHTTPRequest(ResourceMaster.m_context).execute();
         }catch (SecurityException e){
             Log.e("GPS_TAG", "I TRIED");
         }catch (Exception e){

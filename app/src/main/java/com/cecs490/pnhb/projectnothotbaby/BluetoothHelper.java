@@ -1,13 +1,21 @@
 package com.cecs490.pnhb.projectnothotbaby;
 
+import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.cecs490.pnhb.projectnothotbaby.MainActivity;
@@ -17,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
@@ -59,6 +68,81 @@ public class BluetoothHelper {
 
     public static void initBluetooth() {
         mblue = BluetoothAdapter.getDefaultAdapter();
+        if(!mblue.isEnabled()) {
+            DialogFragment dialog = new BluetoothDialog();
+            dialog.show(ResourceMaster.m_activity.getFragmentManager(), "tag_bluetooth");
+        }
+    }
+
+    public static BluetoothDevice[] getPairedDevices(){
+        return mblue.getBondedDevices().toArray(new BluetoothDevice[mblue.getBondedDevices().size()]);
+    }
+
+    public static void pairDevice(BluetoothDevice device) {
+        try {
+            Method method = device.getClass().getMethod("createBond", (Class[]) null);
+            method.invoke(device, (Object[]) null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        IntentFilter intent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+        ResourceMaster.m_activity.registerReceiver(mPairReceiver, intent);
+    }
+
+    private static final BroadcastReceiver mPairReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
+                final int state        = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
+                final int prevState    = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
+
+                if (state == BluetoothDevice.BOND_BONDED && prevState == BluetoothDevice.BOND_BONDING) {
+                    Toast.makeText(ResourceMaster.m_context.getApplicationContext(), "Paired", Toast.LENGTH_SHORT).show();
+                } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDED){
+                    Toast.makeText(ResourceMaster.m_context.getApplicationContext(), "Unpaired", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        }
+    };
+
+    public static ArrayAdapter<String> getDiscoveredDevices(){
+        return discoveredDevices;
+    }
+
+    private static ArrayAdapter<String> discoveredDevices;
+    public static ArrayAdapter<String> discoverDevices(){
+        if(discoveredDevices == null) {
+            discoveredDevices = new ArrayAdapter<>(
+                    ResourceMaster.m_context, android.R.layout.select_dialog_singlechoice);
+            if (BluetoothAdapter.getDefaultAdapter().isDiscovering()) {
+                BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+            }
+            final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+                public void onReceive(Context context, Intent intent) {
+                    String action = intent.getAction();
+                    Log.e("BLUETOOTH", action);
+                    if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                        // Discovery has found a device. Get the BluetoothDevice
+                        // object and its info from the Intent.
+                        BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                        String device_string = device.getName() + " [" + device.getAddress() + "]";
+                        discoveredDevices.add(device_string);
+                    }
+                }
+            };
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(BluetoothDevice.ACTION_FOUND);
+            filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+            filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+            ResourceMaster.m_activity.registerReceiver(mReceiver, filter);
+            Log.e("BLUETOOTH", "REGISTERED RECEIVER");
+            boolean success = BluetoothAdapter.getDefaultAdapter().startDiscovery();
+            Log.e("BLUETOOTH_TAG", "STARTED DISCOVERY: " + success);
+        }
+        return discoveredDevices;
+        //TODO: UNREGISTER RECEIVER
     }
 
     public BluetoothHelper(BluetoothDevice device, BluetoothSocketBehavior behavior) throws IOException {
@@ -179,7 +263,7 @@ public class BluetoothHelper {
         private boolean running = true;
         public ConnectedThread() {
             isConnected = true;
-            mHandler.obtainMessage(BluetoothHelper.MESSAGE_STATE_CHANGE, BluetoothHelper.STATE_CONNECTED, -1).sendToTarget();
+
             try {
                 if(mmSocket != null) {
                     m_inStream = mmSocket.getInputStream();
@@ -192,7 +276,7 @@ public class BluetoothHelper {
             }
             this.start();
             wasConnected = true;
-
+            mHandler.obtainMessage(BluetoothHelper.MESSAGE_STATE_CHANGE, BluetoothHelper.STATE_CONNECTED, -1).sendToTarget();
         }
 
         public synchronized void run() {

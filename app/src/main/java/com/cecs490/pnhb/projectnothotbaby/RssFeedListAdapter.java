@@ -54,10 +54,6 @@ public class RssFeedListAdapter
         ((TextView)holder.rssFeedView.findViewById(R.id.descriptionText))
                 .setText(Html.fromHtml(rssFeedModel.description, Html.FROM_HTML_MODE_COMPACT,
                         new ImageGetter(), null));
-                //       .loadData(rssFeedModel.description, "text/html", null);
-        //((WebView)holder.rssFeedView.findViewById(R.id.descriptionText)).getSettings().setLoadWithOverviewMode(true);
-        //((WebView)holder.rssFeedView.findViewById(R.id.descriptionText)).getSettings().setUseWideViewPort(true);
-
         ((TextView)holder.rssFeedView.findViewById(R.id.linkText)).setText(rssFeedModel.link);
     }
 
@@ -77,10 +73,13 @@ public class RssFeedListAdapter
             Log.e("IMAGE_GETTER_TAG", fileName);
             File file = new File(m_context.getFilesDir(), fileName);
             Log.e("IMAGE_GETTER_TAG", file.getAbsolutePath());
-            Drawable d = Drawable.createFromPath(file.getAbsolutePath());
-
-            d.setBounds(0,0,getScreenWidth(),getScreenWidth()*d.getIntrinsicHeight()/d.getIntrinsicWidth());
-            return d;
+            if(file.exists()) {
+                Drawable d = Drawable.createFromPath(file.getAbsolutePath());
+                d.setBounds(0, 0, getScreenWidth(), getScreenWidth() * d.getIntrinsicHeight() / d.getIntrinsicWidth());
+                return d;
+            }else{
+                return null;
+            }
         }
 
         private int getScreenWidth() {

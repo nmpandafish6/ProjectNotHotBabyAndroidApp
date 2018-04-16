@@ -18,7 +18,7 @@
         android:id="@+id/textView5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Settings"
+        android:text="Conditions"
         android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
         android:visibility="visible" />
 
@@ -96,11 +96,6 @@
             android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
     </GridLayout>
-
-    <WebView
-        android:id="@+id/test_webview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
     <ImageView
         android:id="@+id/imageView3"
